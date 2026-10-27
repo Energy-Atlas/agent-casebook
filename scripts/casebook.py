@@ -218,6 +218,8 @@ def on_files(files, config):
 
 
 def on_nav(nav, config, files):
+    # Home first, then sections (Cases, Guide), then loose pages such as Tags.
+    nav.items.sort(key=lambda i: 0 if _first_src(i) == "index.md" else 2 if i.is_page else 1)
     for item in nav.items:
         if item.is_section and _first_src(item).startswith("cases/"):
             item.children.sort(key=_category_rank)
