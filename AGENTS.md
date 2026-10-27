@@ -22,6 +22,7 @@ regardless of which simulation engine, UBEM framework, or agent tooling is used.
 | `docs/guide/case-format.md` | Human-readable case schema |
 | `templates/case.md` | Template for new cases |
 | `scripts/casebook.py` | Schema, validator, CLI, and MkDocs hook |
+| `skills/ubem-casebook-add/SKILL.md` | Installable agent skill that adds a case via branch and PR |
 | `mkdocs.yml` | Site configuration |
 
 Categories, in workflow order: `preprocessing`, `model-config`, `simulation`,
@@ -53,6 +54,10 @@ without being asked; if one is needed, add it to `CATEGORIES` in
 
 You do not need to edit `mkdocs.yml`, the catalog, or the category index pages:
 navigation and case tables are generated from the files and their front matter.
+
+The `ubem-casebook-add` skill automates these steps on a separate branch and
+opens a pull request. When you change the case rules, the template, or the
+CLI, check that `skills/ubem-casebook-add/SKILL.md` still matches.
 
 ## Case rules
 

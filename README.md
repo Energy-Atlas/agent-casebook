@@ -21,6 +21,7 @@ docs/
   guide/                       case format and contribution guide
 templates/case.md              template for new cases
 scripts/casebook.py            schema, validator, and MkDocs hook
+skills/ubem-casebook-add/      agent skill for adding a case via a PR
 AGENTS.md                      instructions for coding agents
 ```
 
@@ -35,6 +36,40 @@ format is documented in [docs/guide/case-format.md](docs/guide/case-format.md).
 
 Commits use [Conventional Commits](https://www.conventionalcommits.org/) with a
 scope, e.g. `feat(calibration): add area-benchmarking case`.
+
+### Agent skill: `ubem-casebook-add`
+
+[`skills/ubem-casebook-add`](skills/ubem-casebook-add/SKILL.md) lets a coding
+agent add a case end to end. It drafts and validates the case, commits it on a
+local `case/<category>/<case-name>` branch, shows a preview, and on approval
+pushes the branch and opens a pull request.
+
+```text
+ubem-casebook-add [case name] [case category] [context] [fetch-context=false] [skip-approval=false]
+```
+
+- Case name and category are inferred when omitted.
+- By default only the text passed to the skill is used. With
+  `fetch-context=true` the agent also draws on the conversation and session
+  context.
+- With `skip-approval=true` the preview is skipped and the agent goes straight
+  to the pull request. Validation and the confidentiality check still run.
+- If pushing fails (no remote, no write access, GitHub auth problems), the
+  branch stays local and the agent says why.
+
+Install with [`npx skills`](https://github.com/vercel-labs/skills), from GitHub
+or from a local checkout:
+
+```bash
+npx skills add <owner>/<repo> --skill ubem-casebook-add -g
+```
+
+```bash
+npx skills add ./ --skill ubem-casebook-add -g
+```
+
+The skill works on a local checkout of this repository. Run your agent from
+inside the checkout, or set `UBEM_CASEBOOK_DIR` to its path.
 
 ## Local preview
 
