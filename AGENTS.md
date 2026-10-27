@@ -100,6 +100,13 @@ the data behind a case is not shared, so the case must not contain it.
 
 If a request would put such material in a case, stop and ask.
 
+## License
+
+The repository is licensed under CC BY 4.0 (`LICENSE`), so everything added
+must be licensable under it. Write cases in your own words; do not copy
+figures, tables, or passages from papers, standards, or other copyrighted
+sources. Cite them under References instead.
+
 ## Commits
 
 - Default branch: `main`.

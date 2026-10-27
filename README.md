@@ -55,6 +55,14 @@ mkdocs serve
 `mkdocs build --strict` fails on any case that breaks the schema, so the
 check also runs as part of every build.
 
+## License
+
+This repository is licensed under the
+[Creative Commons Attribution 4.0 International License (CC BY 4.0)](LICENSE).
+You may share and adapt the cases for any purpose, including commercially, as
+long as you give appropriate credit, link to the license, and indicate if
+changes were made.
+
 ## Deployment
 
 `.github/workflows/docs.yml` validates and builds the site on every push and

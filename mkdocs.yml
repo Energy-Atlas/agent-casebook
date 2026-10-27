@@ -6,6 +6,9 @@ site_description: >-
 # site_url: https://<owner>.github.io/<repo>/
 # repo_url: https://github.com/<owner>/<repo>
 # edit_uri: edit/main/docs/
+copyright: >-
+  Content licensed under
+  <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
 
 theme:
   name: material
