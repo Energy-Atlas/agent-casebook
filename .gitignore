@@ -16,3 +16,7 @@ Thumbs.db
 
 # Local agent settings
 .claude/settings.local.json
+
+# Skills installed locally with `npx skills add` (source lives in skills/)
+.claude/skills/
+skills-lock.json
