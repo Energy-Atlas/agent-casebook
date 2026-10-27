@@ -55,6 +55,11 @@ Read the text that follows the skill invocation.
   case. Keep a list of the sources you used; it goes in the preview and the
   pull request.
 
+Either way, the scenario itself (the situation, what was observed, and the
+expected and undesirable behavior) must come from those sources. You may add
+general domain knowledge to explain it, mainly in Rationale, along with
+references you can verify. Say in the preview what you added beyond the input.
+
 ## 2. Find the casebook repository
 
 Do this before writing anything or running any git command that changes state.
@@ -65,7 +70,9 @@ its `mkdocs.yml` has `site_name: UBEM Agent Casebook`.
 
 Check, in order:
 
-1. the current directory's git top level (`git rev-parse --show-toplevel`);
+1. the git top level (`git rev-parse --show-toplevel`) of the shell's working
+   directory and, if your session has a different project directory, of that
+   directory too;
 2. the path in the `UBEM_CASEBOOK_DIR` environment variable, if set.
 
 Do not search the disk beyond these. If neither is the casebook, **stop and
@@ -84,8 +91,11 @@ Call the result `REPO`. Then:
   writing it is `preprocessing`, `model-config`, `simulation`, `validation`,
   `calibration`, `results`, `scenarios`.
 - Pick the Python interpreter: `REPO/.venv/Scripts/python` (Windows) or
-  `REPO/.venv/bin/python` if it exists, otherwise `python3` or `python`. It
-  needs PyYAML; MkDocs is optional.
+  `REPO/.venv/bin/python` if it exists, otherwise `python3` or `python`.
+  The validator needs PyYAML. The site build needs everything in
+  `REPO/requirements.txt` (MkDocs and the Material theme). If PyYAML is
+  missing, ask the user whether to install `requirements.txt` into a
+  temporary virtual environment, or cancel. Never install packages globally.
 
 ## 3. Prepare a branch without touching the user's checkout
 
@@ -93,8 +103,9 @@ The user's checkout may be on another branch or have uncommitted changes.
 Leave it alone: build the case in a separate worktree.
 
 1. **Base.** If `git -C REPO remote get-url origin` succeeds, run
-   `git -C REPO fetch origin main` and use `origin/main`; if the fetch fails,
-   warn and use local `main`. Without a remote, use local `main`.
+   `git -C REPO fetch origin main` and use `origin/main`. If the fetch fails,
+   warn that the remote is unreachable and use local `main`. Without a
+   remote, use local `main`.
 2. **Category.** Use the given one if it is in `CATEGORIES`; if it is not, say
    so and ask. Otherwise infer the workflow stage where the behavior occurs.
    Never add a category.
@@ -104,12 +115,14 @@ Leave it alone: build the case in a separate worktree.
    (`git -C REPO ls-tree -r --name-only <base> docs/cases`).
 4. **Branch.** `case/<category>/<case-name>`. Check that it exists neither
    locally (`git -C REPO rev-parse --verify --quiet refs/heads/<branch>`) nor
-   on `origin` (`git -C REPO ls-remote --heads origin <branch>`). If it does,
-   ask the user for a different name or cancel.
-5. **Worktree**, in a temporary directory outside the repository:
+   on `origin` (`git -C REPO ls-remote --heads origin <branch>`; skip this if
+   the remote is unreachable). If it does, ask the user for a different name
+   or cancel.
+5. **Worktree**, in a temporary directory outside the repository. Use
+   `--no-track` so the branch never tracks `main`:
 
    ```bash
-   git -C REPO worktree add -b <branch> <tmpdir>/<case-name> <base>
+   git -C REPO worktree add --no-track -b <branch> <tmpdir>/<case-name> <base>
    ```
 
    Call it `WT`. All file edits, validation, and commits happen in `WT`.
@@ -129,9 +142,10 @@ Leave it alone: build the case in a separate worktree.
      (`grep -h "^tags:" -r docs/cases`);
    - `origin`, `data_availability`, and `eval_readiness` from the allowed
      values; choose conservatively and say in the preview why;
-   - the required sections, plus optional ones only when the input supports
-     them, without the `(optional)` suffix and without the template's prompt
-     text;
+   - the required sections, plus optional ones when you can write them from
+     the allowed sources (see step 1), without the `(optional)` suffix and
+     without the template's prompt text. Without an Evaluation potential
+     section, `eval_readiness` is `conceptual`;
    - links to related cases as relative links;
    - only references you can verify; no invented citations, URLs, or data.
 4. **Confidentiality check.** The repository is public. If the draft would
@@ -152,10 +166,16 @@ Inside `WT`:
 <python> -m mkdocs build --strict --site-dir <tmpdir>/site
 ```
 
-The MkDocs build runs only if MkDocs is installed; otherwise note that CI will
-run it. Fix any problem in the case and rerun until both pass. If you cannot
-make them pass, do not commit: report the errors, remove the worktree and
-branch, and stop.
+Tell problems with the case apart from problems with the environment:
+
+- **Environment problems.** MkDocs, the Material theme, or another package
+  from `requirements.txt` is missing, or the same build also fails on the
+  base. These are not reasons to stop. Note that the strict build did not run
+  locally and that CI will run it, and continue. Do not install packages for
+  this without the user's agreement.
+- **Problems with the case.** Fix the case and rerun until both checks pass.
+  If you cannot make them pass, do not commit: report the errors, remove the
+  worktree and branch, and stop.
 
 Then commit only the case file, with the message format from AGENTS.md (add
 the commit trailers your agent normally uses):
@@ -179,17 +199,19 @@ Otherwise show the user:
   one line of reasoning each;
 - the context sources used (the skill input only, or the list from
   `fetch-context=true`);
-- validation results;
+- validation results, including any check that did not run locally and why;
+- what you added beyond the input, and confidentiality findings if any;
 - the full case file.
 
 Then ask the user to choose (use your question tool if you have one):
 
 - **Approve**: push the branch and open a pull request (step 7).
 - **Revise**: apply the requested changes in `WT`, revalidate, amend the
-  commit (`git -C WT commit --amend --no-edit` after staging), and preview
-  again.
-- **Keep local**: stop. The branch stays local; tell the user its name and how
-  to push it later.
+  commit after staging, and preview again. If the case name or category
+  changed, move the file, rename the branch, and amend with the new commit
+  message; otherwise `git -C WT commit --amend --no-edit` is enough.
+- **Keep local**: stop. The branch stays local; tell the user its name and the
+  explicit push command (`git -C REPO push -u origin <branch>`).
 - **Discard**: remove the worktree and delete the branch
   (`git -C REPO branch -D <branch>`). Only on this explicit choice.
 
@@ -204,14 +226,18 @@ Then ask the user to choose (use your question tool if you have one):
    ```
 
    If the push fails for authentication, permission (e.g. 403, "permission
-   denied", no write access), network, or branch-protection reasons, **warn**
-   with the error message, keep the branch local, and give the user the push
-   command to run once access is sorted out. Do not change credentials, run
-   `gh auth login` for them, force-push, or push to another remote. You may
+   denied", no write access), network, or branch-protection reasons, or your
+   own tool-permission system refuses it, **warn** with the error message,
+   keep the branch local, and give the user the push command to run once
+   access is sorted out. Do not look for a workaround: do not change
+   credentials, run `gh auth login` for them, force-push, or push to another
+   remote. You may
    mention that a contributor without write access can push to a fork and open
    the pull request from there.
-3. **Pull request.** If the GitHub CLI is available and `gh auth status`
-   succeeds:
+3. **Pull request.** If `origin` is not a GitHub repository (a local path,
+   GitLab, or another host), do not run `gh`: report that the branch is
+   pushed and that the pull request has to be opened on that host. Otherwise,
+   if the GitHub CLI is available and `gh auth status` succeeds:
 
    ```bash
    gh pr create --repo <owner>/<repo> --base main --head case/<category>/<case-name> \
@@ -231,7 +257,8 @@ Never push to `main`, merge the pull request, or enable auto-merge.
 
 ## 8. Clean up and report
 
-Remove the worktree (`git -C REPO worktree remove <WT>`); the branch remains.
+Remove the worktree (`git -C REPO worktree remove <WT>`) and the rest of the
+temporary directory (site build output, PR body file); the branch remains.
 Leave the user's checkout as it was.
 
 Report in a few lines: case id and title, file path, branch, commit, and the
