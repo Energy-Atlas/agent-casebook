@@ -82,6 +82,10 @@ The engine is read-only for the agent.
    component. If no parameter can close the gap, call it structural (in the
    engine's physics or inputs, not the posterior). Name what to inspect,
    such as cooling capacity, the cooled share of floor area, or efficiency.
+   Before blaming the engine's physics, list the fixed inputs the agent's own
+   pipeline sets for that component, such as capacity caps or values that
+   override the engine's defaults, and test the suspect one on a single
+   feeder.
 5. **Check what the objective rewards.** Score the stage-1 likelihood term
    by term for the posterior and for an obvious correction (here, more
    electric heating and a lower base). If the correction improves the hourly
@@ -120,6 +124,12 @@ The engine is read-only for the agent.
   scaling down base load and scaling up heating. This ignores that the
   objective will push back and that the missing cooling response cannot be
   supplied.
+- **Attributing a structural gap to the engine** without checking the fixed
+  inputs the pipeline passes to it. Values carried over from earlier pilots
+  or test set-ups can cap a response that the engine itself does not limit.
+- **Bundling several fixes into one recalibration** once the cause is known.
+  Each fix then cannot be credited, and one can mask a regression from
+  another.
 - **Labeling the residual as "weather noise" or occupant behavior** without
   showing that a signature model leaves it unexplained.
 - **Editing or silently dropping meter data** to improve the fit.
@@ -188,7 +198,8 @@ The diagnostic checks found:
 
 - **Surrogate sweep:** no calibrated parameter could raise the cooling slope
   by more than about a tenth of the gap. Room-AC ownership and cooling
-  setpoints were already at plausible high-load values, so the shortfall was
+  setpoints were already at plausible high-load values, so the shortfall lay
+  outside the calibrated parameters. The agent first described it as
   structural in the engine.
 - **Daily peak:** the model peaked at the same evening hour every day. The
   peak traced to appliance and lighting input schedules with a sharp evening
@@ -208,6 +219,34 @@ The agent reported these findings and proposed fixes in this order:
 4. widen the library range.
 
 It did not start new runs.
+
+**Follow-up: the cause was an input, not the engine.** A one-feeder engine
+test, approved by the user, found the cause in the pipeline's own inputs.
+Room air conditioners had a sensible cooling capacity cap carried over from
+an earlier single-feeder pilot, while the engine's default is unlimited.
+Removing the cap on that feeder brought the cooling slope from about a third
+of the meter's to about a fifth above it. A fixed efficiency of 3 in place of the
+engine's temperature-dependent curve overshot by much more, so the curve was
+kept.
+
+The agent then looked at the evening spike on the same feeder. It was worth
+only one or two points of hourly CV(RMSE), so the user chose to fix the
+cooling cap alone. The agent re-ran the affected library buildings without
+the cap and recalibrated with everything else unchanged. Against the meter,
+for the sum of the checked feeders:
+
+| Component | Before | After removing the cap |
+| --- | --- | --- |
+| Cooling slope | about a quarter of the meter's | about 80% |
+| Heating slope | about a quarter lower | within about 4% |
+| Weekday base | about 14% higher | about 9% higher |
+| Hourly CV(RMSE) | baseline | about 2 points lower |
+
+Hourly CV(RMSE) improved on every checked feeder and in every season, not
+only in summer. The parameters that had compensated for the missing cooling
+moved back from the edges of their ranges: room-AC ownership, the cooling
+setpoint, and the spread of the equipment multiplier. Year-round level
+errors on some held-out feeders were unchanged, so they have another cause.
 
 ## Evaluation potential
 
