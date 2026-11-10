@@ -210,10 +210,14 @@ _cases: dict[str, Case] = {}
 
 def on_files(files, config):
     cases = load_cases(Path(config["docs_dir"]))
-    for path, message in validate(cases):
+    problems = validate(cases)
+    for path, message in problems:
         log.warning(f"{path}: {message}")
+    # Only cases without problems get a metadata table and a row in case
+    # tables; rendering an invalid case would fail on missing fields.
+    invalid = {path for path, _ in problems}
     _cases.clear()
-    _cases.update({c.path: c for c in cases if not c.error})
+    _cases.update({c.path: c for c in cases if c.path not in invalid})
     return files
 
 
