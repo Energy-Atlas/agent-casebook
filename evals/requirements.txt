@@ -1,0 +1,6 @@
+# Evaluation tooling (evals/evalkit.py and the pilot graders and generators).
+# Separate from the documentation build (requirements.txt at the repo root).
+# The graders use only the standard library; no GIS packages are required to
+# prepare or grade. The evaluated agent's own environment is described per
+# instance under agent.environment and is not installed from this file.
+PyYAML>=6

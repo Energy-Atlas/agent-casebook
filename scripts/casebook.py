@@ -10,6 +10,12 @@ Used two ways:
 
       python scripts/casebook.py check     # validate all cases
       python scripts/casebook.py next-id   # print the next free case id
+
+Optional evaluation instances live in ``evals/instances/<id>/instance.yaml``
+and name the case ids they exercise. This module checks only that linkage
+(linked ids exist; ``eval_readiness: automated`` has a linked instance) and
+lists linked instances on case pages. Everything else about instances is
+checked by ``evals/evalkit.py``.
 """
 
 from __future__ import annotations
@@ -60,6 +66,7 @@ FENCE_RE = re.compile(r"^(```|~~~)")
 MARKER_RE = re.compile(r"<!--\s*casebook:index(?:\s+stage=([a-z0-9-]+))?\s*-->")
 
 DOCS_DIR = Path(__file__).resolve().parent.parent / "docs"
+INSTANCES_SUBDIR = Path("evals") / "instances"  # relative to the repository root
 
 log = logging.getLogger("mkdocs.hooks.casebook")
 
@@ -101,6 +108,68 @@ def load_cases(docs_dir: Path = DOCS_DIR) -> list[Case]:
         rel = file.relative_to(docs_dir).as_posix()
         cases.append(parse_case(rel, file.read_text(encoding="utf-8")))
     return cases
+
+
+@dataclass
+class Instance:
+    path: str  # relative to the repository root, POSIX style
+    id: str
+    cases: list
+    error: str | None = None
+
+
+def load_instances(docs_dir: Path = DOCS_DIR) -> list[Instance]:
+    """Read the id and linked case ids of each evaluation instance, if any."""
+    root = docs_dir.resolve().parent / INSTANCES_SUBDIR
+    instances = []
+    for file in sorted(root.glob("*/instance.yaml")) if root.is_dir() else []:
+        rel = (INSTANCES_SUBDIR / file.parent.name / file.name).as_posix()
+        try:
+            spec = yaml.safe_load(file.read_text(encoding="utf-8"))
+        except yaml.YAMLError as exc:
+            instances.append(Instance(rel, file.parent.name, [], f"invalid YAML: {exc}"))
+            continue
+        if not isinstance(spec, dict):
+            instances.append(Instance(rel, file.parent.name, [], "not a mapping"))
+            continue
+        instances.append(Instance(rel, str(spec.get("id")), spec.get("cases"), None))
+    return instances
+
+
+def instance_links(instances: list[Instance]) -> dict[str, list[str]]:
+    """Map case id -> ids of instances that link to it."""
+    links: dict[str, list[str]] = {}
+    for inst in instances:
+        if not inst.error and isinstance(inst.cases, list):
+            for case_id in inst.cases:
+                links.setdefault(str(case_id), []).append(inst.id)
+    return links
+
+
+def validate_links(cases: list[Case], instances: list[Instance]) -> list[tuple[str, str]]:
+    problems = []
+    case_ids = {str(c.meta.get("id")) for c in cases if not c.error}
+    for inst in instances:
+        folder = inst.path.split("/")[-2]
+        if inst.error:
+            problems.append((inst.path, inst.error))
+            continue
+        if inst.id != folder:
+            problems.append((inst.path, f"id '{inst.id}' does not match folder '{folder}'"))
+        if not (isinstance(inst.cases, list) and inst.cases):
+            problems.append((inst.path, "cases must be a non-empty list of case ids"))
+            continue
+        for case_id in inst.cases:
+            if str(case_id) not in case_ids:
+                problems.append((inst.path, f"links to unknown case id '{case_id}'"))
+    links = instance_links(instances)
+    for case in cases:
+        if case.meta.get("eval_readiness") == "automated" and str(case.meta.get("id")) not in links:
+            problems.append((
+                case.path,
+                f"eval_readiness is automated but no instance in {INSTANCES_SUBDIR.as_posix()}/ links to it",
+            ))
+    return problems
 
 
 def headings(body: str) -> tuple[list[str], list[str]]:
@@ -181,8 +250,9 @@ def validate_case(case: Case) -> list[str]:
     return errors
 
 
-def validate(cases: list[Case]) -> list[tuple[str, str]]:
+def validate(cases: list[Case], instances: list[Instance] | None = None) -> list[tuple[str, str]]:
     problems = [(c.path, e) for c in cases for e in validate_case(c)]
+    problems += validate_links(cases, instances or [])
     seen: dict[str, str] = {}
     for case in cases:
         case_id = case.meta.get("id")
@@ -206,11 +276,14 @@ def _sort_key(case: Case) -> tuple:
 # --- MkDocs hook -------------------------------------------------------------
 
 _cases: dict[str, Case] = {}
+_links: dict[str, list[str]] = {}
 
 
 def on_files(files, config):
-    cases = load_cases(Path(config["docs_dir"]))
-    problems = validate(cases)
+    docs_dir = Path(config["docs_dir"])
+    cases = load_cases(docs_dir)
+    instances = load_instances(docs_dir)
+    problems = validate(cases, instances)
     for path, message in problems:
         log.warning(f"{path}: {message}")
     # Only cases without problems get a metadata table and a row in case
@@ -218,6 +291,8 @@ def on_files(files, config):
     invalid = {path for path, _ in problems}
     _cases.clear()
     _cases.update({c.path: c for c in cases if c.path not in invalid})
+    _links.clear()
+    _links.update(instance_links(instances))
     return files
 
 
@@ -275,12 +350,22 @@ def _category_rank(item) -> int:
 
 def _meta_table(case: Case) -> str:
     m = case.meta
-    return "\n".join([
+    lines = [
         "| ID | Stage | Origin | Recorded | Data availability | Eval readiness |",
         "| --- | --- | --- | --- | --- | --- |",
         f"| `{m['id']}` | [{m['stage']}](index.md) | {m['origin']} | {m['date']} "
         f"| {m['data_availability']} | {m['eval_readiness']} |",
-    ])
+    ]
+    linked = _links.get(str(m["id"]))
+    if linked:
+        names = ", ".join(f"`{i}`" for i in sorted(linked))
+        lines += [
+            "",
+            f"Evaluation instances: {names}. These are public development references "
+            f"in the repository's `{INSTANCES_SUBDIR.as_posix()}/` folder; see "
+            "[evaluation instances](../../guide/evaluations.md).",
+        ]
+    return "\n".join(lines)
 
 
 def _case_table(page_src: str, stage: str | None) -> str:
@@ -324,10 +409,14 @@ def main(argv: list[str] | None = None) -> int:
         print(next_id(cases))
         return 0
 
-    problems = validate(cases)
+    instances = load_instances(args.docs_dir)
+    problems = validate(cases, instances)
     for path, message in problems:
         print(f"{path}: {message}", file=sys.stderr)
-    print(f"{len(cases)} case(s) checked, {len(problems)} problem(s)")
+    print(
+        f"{len(cases)} case(s) and {len(instances)} evaluation instance(s) checked, "
+        f"{len(problems)} problem(s)"
+    )
     return 1 if problems else 0
 
 

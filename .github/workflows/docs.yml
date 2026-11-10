@@ -30,6 +30,19 @@ jobs:
         with:
           path: site
 
+  # Evaluation tooling has its own requirements; no agent runs here, only
+  # instance checks and grader self-tests on the committed sample submissions.
+  evals:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r evals/requirements.txt
+      - run: python evals/evalkit.py check
+
   deploy:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: build

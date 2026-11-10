@@ -20,3 +20,6 @@ Thumbs.db
 # Skills installed locally with `npx skills add` (source lives in skills/)
 .claude/skills/
 skills-lock.json
+
+# Evaluation run results (run artifacts, not source)
+runs/
