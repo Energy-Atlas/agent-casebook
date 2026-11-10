@@ -6,7 +6,7 @@ origin: synthetic
 stage: preprocessing
 tags: [coordinate-reference-system, geometry, data-validation, triangulation, provenance, restraint]
 data_availability: synthetic
-eval_readiness: specified
+eval_readiness: automated
 ---
 
 ## Situation
@@ -149,6 +149,14 @@ the containing parcel. Criteria:
 The report alone cannot establish whether the agent examined what it cites,
 whether it would have asked the user, or how sound its reasoning was. Those
 need a transcript or expert review.
+
+Both variants exist as the evaluation instances `crs-declaration-mislabeled`
+and `crs-declaration-control` (see [evaluation instances](../../guide/evaluations.md)).
+Their inputs are synthetic. They are public development references that check
+the evaluation mechanics; they do not measure performance on real data.
+Besides the report, the agent writes the corrected building layer, so the
+action can be read from the artifact: whether the declaration changed and
+whether the coordinates moved.
 
 Later variants could test an undeterminable CRS (where unresolved is the
 correct answer), feet versus metres, axis order, neighboring zones, and
