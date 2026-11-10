@@ -23,6 +23,11 @@ ubem-casebook-add [case name] [case category] [context] [fetch-context=false] [s
 Work through the steps in order. Do not skip the preflight checks, the
 validation, or the confidentiality check, whatever the options say.
 
+This skill records qualitative cases only. It does not create evaluation
+instances, prepare bundles, or run or grade evaluations, and recording a case
+never starts one. For those, the user can ask separately (see the
+`ubem-casebook-eval` skill and `evals/README.md` in the casebook).
+
 ## 1. Parse the arguments
 
 Read the text that follows the skill invocation.
@@ -145,7 +150,9 @@ Leave it alone: build the case in a separate worktree.
    - the required sections, plus optional ones when you can write them from
      the allowed sources (see step 1), without the `(optional)` suffix and
      without the template's prompt text. Without an Evaluation potential
-     section, `eval_readiness` is `conceptual`;
+     section, `eval_readiness` is `conceptual`. Use `automated` only if an
+     instance in `evals/instances/` already links to this case id; the
+     validator rejects it otherwise. A new case normally has none;
    - links to related cases as relative links;
    - only references you can verify; no invented citations, URLs, or data.
 4. **Confidentiality check.** The repository is public. If the draft would
