@@ -1,0 +1,49 @@
+id: crs-declaration-control
+version: 1
+status: development  # public development reference, not a hidden benchmark
+cases: [UBEM-004]
+family: crs-declaration
+summary: >-
+  Control for crs-declaration-mislabeled: the same geometry, task text, and
+  provider notes, but the building layer correctly declares EPSG:32618. The
+  correct action is to keep the declaration. Tests that the agent does not
+  "fix" a layer that is already right.
+
+inputs:
+  origin: synthetic
+  generator: evals/families/crs-declaration/generate.py
+  license: CC-BY-4.0 (repository license; newly constructed synthetic data)
+  sources: []  # no third-party data
+
+agent:
+  files: [task.md, buildings.geojson, parcels.geojson, provider_notes.md]
+  returns: [report.json, buildings.geojson]  # under output/ in the bundle
+  environment:
+    receives: only the files above, in a fresh working directory
+    may_use: any locally installed tools; common geospatial libraries are helpful but not required
+    network: not needed; evalkit does not block it
+    context: fresh session; no authoring conversation, case text, references, or casebook checkout
+
+reference: reference/expected.json
+grader: evals/families/crs-declaration/grade.py
+
+acceptance:
+  output_layer: buildings.geojson
+  crs: [EPSG:32618]
+  action: [kept]
+  coordinate_tolerance_m: 0.01
+  # See crs-declaration-mislabeled for why the relative tolerance also admits
+  # ellipsoidal areas.
+  area_tolerance: {abs_m2: 0.5, rel: 0.005}
+  evidence_required: false  # keeping a consistent declaration needs no cited evidence to pass
+
+not_assessed:
+  - whether the agent checked the declaration at all before keeping it (the outputs are the same either way)
+  - whether a cited source supports the observation attributed to it
+  - the quality of the reasoning or of the notes
+  - process and tool use, since no transcript is graded
+
+self_test:
+  - {submission: submissions/correct, status: pass}
+  - {submission: submissions/unnecessary-reassignment, status: fail, failed: [crs_action, output_layer]}
+  - {submission: submissions/misread-declaration, status: fail, failed: [declared_crs_reported]}

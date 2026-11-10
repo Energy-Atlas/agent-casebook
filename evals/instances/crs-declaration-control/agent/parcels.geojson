@@ -1,0 +1,13 @@
+{
+"type": "FeatureCollection",
+"name": "parcels",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::32618" } },
+"features": [
+{"type": "Feature", "properties": {"parcel_id": "P01"}, "geometry": {"type": "Polygon", "coordinates": [[[498250.0, 4705120.0], [498284.09, 4705120.0], [498284.09, 4705160.99], [498250.0, 4705160.99], [498250.0, 4705120.0]]]}},
+{"type": "Feature", "properties": {"parcel_id": "P02"}, "geometry": {"type": "Polygon", "coordinates": [[[498284.09, 4705120.0], [498326.16, 4705120.0], [498326.16, 4705160.99], [498284.09, 4705160.99], [498284.09, 4705120.0]]]}},
+{"type": "Feature", "properties": {"parcel_id": "P03"}, "geometry": {"type": "Polygon", "coordinates": [[[498326.16, 4705120.0], [498366.85, 4705120.0], [498366.85, 4705160.99], [498326.16, 4705160.99], [498326.16, 4705120.0]]]}},
+{"type": "Feature", "properties": {"parcel_id": "P04"}, "geometry": {"type": "Polygon", "coordinates": [[[498250.0, 4705175.99], [498286.48, 4705175.99], [498286.48, 4705221.26], [498250.0, 4705221.26], [498250.0, 4705175.99]]]}},
+{"type": "Feature", "properties": {"parcel_id": "P05"}, "geometry": {"type": "Polygon", "coordinates": [[[498286.48, 4705175.99], [498320.64, 4705175.99], [498320.64, 4705221.26], [498286.48, 4705221.26], [498286.48, 4705175.99]]]}},
+{"type": "Feature", "properties": {"parcel_id": "P06"}, "geometry": {"type": "Polygon", "coordinates": [[[498320.64, 4705175.99], [498356.57, 4705175.99], [498356.57, 4705221.26], [498320.64, 4705221.26], [498320.64, 4705175.99]]]}}
+]
+}

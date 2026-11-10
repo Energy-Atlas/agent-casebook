@@ -1,0 +1,76 @@
+{
+  "layers": [
+    {
+      "file": "buildings.geojson",
+      "declared_crs": "EPSG:4326",
+      "crs_used": "EPSG:32618",
+      "action": "reprojected",
+      "evidence": [
+        {
+          "source": "provider_notes.md",
+          "observation": "States WGS 84 / UTM zone 18N."
+        }
+      ]
+    },
+    {
+      "file": "parcels.geojson",
+      "declared_crs": "EPSG:32618",
+      "crs_used": "EPSG:32618",
+      "action": "kept",
+      "evidence": [
+        {
+          "source": "parcels.geojson",
+          "observation": "Coordinates fall within the valid range of the declared EPSG:32618."
+        }
+      ]
+    }
+  ],
+  "buildings": [
+    {
+      "bldg_id": "B01",
+      "footprint_area_m2": 153.71,
+      "parcel_id": null
+    },
+    {
+      "bldg_id": "B02",
+      "footprint_area_m2": 224.94,
+      "parcel_id": null
+    },
+    {
+      "bldg_id": "B03",
+      "footprint_area_m2": 478.5,
+      "parcel_id": null
+    },
+    {
+      "bldg_id": "B04",
+      "footprint_area_m2": 132.46,
+      "parcel_id": null
+    },
+    {
+      "bldg_id": "B05",
+      "footprint_area_m2": 193.73,
+      "parcel_id": null
+    },
+    {
+      "bldg_id": "B06",
+      "footprint_area_m2": 182.97,
+      "parcel_id": null
+    },
+    {
+      "bldg_id": "B07",
+      "footprint_area_m2": 174.85,
+      "parcel_id": null
+    },
+    {
+      "bldg_id": "B08",
+      "footprint_area_m2": 213.52,
+      "parcel_id": null
+    },
+    {
+      "bldg_id": "B09",
+      "footprint_area_m2": 349.27,
+      "parcel_id": null
+    }
+  ],
+  "notes": "sample submission: reprojected"
+}

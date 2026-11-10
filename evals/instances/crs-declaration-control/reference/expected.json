@@ -1,0 +1,48 @@
+{
+  "layers": {
+    "buildings.geojson": {
+      "declared_crs": "EPSG:32618"
+    },
+    "parcels.geojson": {
+      "declared_crs": "EPSG:32618"
+    }
+  },
+  "buildings": {
+    "B01": {
+      "footprint_area_m2": 153.71,
+      "parcel_id": "P01"
+    },
+    "B02": {
+      "footprint_area_m2": 224.94,
+      "parcel_id": "P01"
+    },
+    "B03": {
+      "footprint_area_m2": 478.5,
+      "parcel_id": "P02"
+    },
+    "B04": {
+      "footprint_area_m2": 132.46,
+      "parcel_id": "P03"
+    },
+    "B05": {
+      "footprint_area_m2": 193.73,
+      "parcel_id": "P03"
+    },
+    "B06": {
+      "footprint_area_m2": 182.97,
+      "parcel_id": "P03"
+    },
+    "B07": {
+      "footprint_area_m2": 174.85,
+      "parcel_id": "P05"
+    },
+    "B08": {
+      "footprint_area_m2": 213.52,
+      "parcel_id": "P05"
+    },
+    "B09": {
+      "footprint_area_m2": 349.27,
+      "parcel_id": "P06"
+    }
+  }
+}

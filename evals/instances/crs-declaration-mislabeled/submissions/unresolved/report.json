@@ -1,0 +1,76 @@
+{
+  "layers": [
+    {
+      "file": "buildings.geojson",
+      "declared_crs": "EPSG:4326",
+      "crs_used": null,
+      "action": "unresolved",
+      "evidence": [
+        {
+          "source": "buildings.geojson",
+          "observation": "Coordinates are about 498,260 to 498,360 east and 4,705,130 to 4,705,200 north, outside any longitude or latitude range, so the declared EPSG:4326 cannot be right."
+        }
+      ]
+    },
+    {
+      "file": "parcels.geojson",
+      "declared_crs": "EPSG:32618",
+      "crs_used": "EPSG:32618",
+      "action": "kept",
+      "evidence": [
+        {
+          "source": "parcels.geojson",
+          "observation": "Coordinates fall within the valid range of the declared EPSG:32618."
+        }
+      ]
+    }
+  ],
+  "buildings": [
+    {
+      "bldg_id": "B01",
+      "footprint_area_m2": null,
+      "parcel_id": null
+    },
+    {
+      "bldg_id": "B02",
+      "footprint_area_m2": null,
+      "parcel_id": null
+    },
+    {
+      "bldg_id": "B03",
+      "footprint_area_m2": null,
+      "parcel_id": null
+    },
+    {
+      "bldg_id": "B04",
+      "footprint_area_m2": null,
+      "parcel_id": null
+    },
+    {
+      "bldg_id": "B05",
+      "footprint_area_m2": null,
+      "parcel_id": null
+    },
+    {
+      "bldg_id": "B06",
+      "footprint_area_m2": null,
+      "parcel_id": null
+    },
+    {
+      "bldg_id": "B07",
+      "footprint_area_m2": null,
+      "parcel_id": null
+    },
+    {
+      "bldg_id": "B08",
+      "footprint_area_m2": null,
+      "parcel_id": null
+    },
+    {
+      "bldg_id": "B09",
+      "footprint_area_m2": null,
+      "parcel_id": null
+    }
+  ],
+  "notes": "sample submission: unresolved"
+}

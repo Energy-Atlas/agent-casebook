@@ -1,0 +1,41 @@
+{
+  "layers": [
+    {
+      "file": "buildings.geojson",
+      "declared_crs": "EPSG:4326",
+      "crs_used": "EPSG:32618",
+      "action": "reassigned",
+      "evidence": [
+        {
+          "source": "buildings.geojson",
+          "observation": "Coordinates are about 498,260 to 498,360 east and 4,705,130 to 4,705,200 north, outside any longitude or latitude range, so the declared EPSG:4326 cannot be right."
+        },
+        {
+          "source": "provider_notes.md",
+          "observation": "States the footprints were delivered in WGS 84 / UTM zone 18N, in metres (EPSG:32618)."
+        },
+        {
+          "source": "parcels.geojson",
+          "observation": "Declared EPSG:32618 with consistent coordinates; read in EPSG:32618, every building lies inside exactly one parcel."
+        },
+        {
+          "source": "buildings.geojson",
+          "observation": "For the four buildings with src_area_m2, the planar area in metres matches the recorded area to within 0.1 m2."
+        }
+      ]
+    },
+    {
+      "file": "parcels.geojson",
+      "declared_crs": "EPSG:32618",
+      "crs_used": "EPSG:32618",
+      "action": "kept",
+      "evidence": [
+        {
+          "source": "parcels.geojson",
+          "observation": "Coordinates fall within the valid range of the declared EPSG:32618."
+        }
+      ]
+    }
+  ],
+  "notes": "sample submission: malformed"
+}

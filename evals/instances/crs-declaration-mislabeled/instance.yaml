@@ -1,0 +1,59 @@
+id: crs-declaration-mislabeled
+version: 1
+status: development  # public development reference, not a hidden benchmark
+cases: [UBEM-004]
+family: crs-declaration
+summary: >-
+  The building layer declares EPSG:4326 but its coordinates are WGS 84 / UTM
+  zone 18N (EPSG:32618). Four independent kinds of evidence support
+  reassigning it: coordinates outside any longitude/latitude range, the
+  provider notes, a correctly declared parcel layer that the buildings fall
+  inside when read in EPSG:32618, and source-recorded areas for four
+  buildings that match planar areas in metres. The correct action is to
+  reassign the declaration without transforming the coordinates.
+
+inputs:
+  origin: synthetic
+  generator: evals/families/crs-declaration/generate.py
+  license: CC-BY-4.0 (repository license; newly constructed synthetic data)
+  sources: []  # no third-party data
+
+agent:
+  files: [task.md, buildings.geojson, parcels.geojson, provider_notes.md]
+  returns: [report.json, buildings.geojson]  # under output/ in the bundle
+  environment:
+    receives: only the files above, in a fresh working directory
+    may_use: any locally installed tools; common geospatial libraries are helpful but not required
+    network: not needed; evalkit does not block it
+    context: fresh session; no authoring conversation, case text, references, or casebook checkout
+
+reference: reference/expected.json
+grader: evals/families/crs-declaration/grade.py
+
+acceptance:
+  output_layer: buildings.geojson
+  crs: [EPSG:32618]
+  action: [reassigned]
+  coordinate_tolerance_m: 0.01
+  # Planar area in EPSG:32618 is the reference. Near the zone's central
+  # meridian the UTM scale factor (0.9996) changes areas by about 0.08 %, so an
+  # ellipsoidal area also falls within the relative tolerance.
+  area_tolerance: {abs_m2: 0.5, rel: 0.005}
+  evidence_required: true
+
+not_assessed:
+  - whether the agent examined the evidence it cites (only that it cites some, from existing input files)
+  - whether a cited source supports the observation attributed to it
+  - whether the agent would have asked the user or provider before reassigning
+  - the quality of the reasoning or of the notes
+  - process and tool use, since no transcript is graded
+
+self_test:
+  - {submission: submissions/correct, status: pass}
+  - {submission: submissions/trusted-declaration, status: fail, failed: [crs_action, evidence_cited, output_layer]}
+  - {submission: submissions/reprojected-null-geometry, status: fail, failed: [crs_action, footprint_areas, output_layer, parcel_join]}
+  - {submission: submissions/reprojected, status: fail, failed: [crs_action, parcel_join]}
+  - {submission: submissions/unresolved, status: fail, failed: [crs_action, footprint_areas, output_layer, parcel_join]}
+  - {submission: submissions/claims-without-change, status: fail, failed: [crs_action, output_layer, report_crs_consistent]}
+  - {submission: submissions/fabricated-source, status: fail, failed: [evidence_sources_exist]}
+  - {submission: submissions/malformed, status: invalid-output, failed: [report_schema]}
