@@ -64,7 +64,10 @@ data or identifying details.
 | `conceptual` | The behavior is described; no assessment is designed yet |
 | `specified` | Pass/fail criteria or a rubric are written down |
 | `mockable` | A synthetic or mocked scenario that reproduces the situation is described |
-| `automated` | An executable evaluation exists |
+| `automated` | An executable evaluation exists: at least one instance in `evals/instances/` links to the case (checked) |
+
+Evaluation instances are optional; see [evaluation instances](evaluations.md).
+A case page lists the instances that link to it.
 
 ## Body
 

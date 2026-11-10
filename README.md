@@ -22,6 +22,8 @@ docs/
 templates/case.md              template for new cases
 scripts/casebook.py            schema, validator, and MkDocs hook
 skills/ubem-casebook-add/      agent skill for adding a case via a PR
+skills/ubem-casebook-eval/     agent skill for checking, preparing, and grading evaluation instances
+evals/                         optional evaluation instances and tooling (pilot)
 AGENTS.md                      instructions for coding agents
 ```
 
@@ -70,6 +72,22 @@ npx skills add ./ --skill ubem-casebook-add -g
 
 The skill works on a local checkout of this repository. Run your agent from
 inside the checkout, or set `UBEM_CASEBOOK_DIR` to its path.
+
+## Evaluation instances (optional, pilot)
+
+Some cases have runnable evaluation instances in [`evals/`](evals/README.md):
+concrete inputs, an agent-facing task, a reference, and a grader. A case does
+not need one. The current instances are synthetic public development
+references for the evaluation mechanics, not a hidden benchmark. They need
+only `evals/requirements.txt`, separate from the docs build:
+
+```bash
+python evals/evalkit.py check
+```
+
+The [`ubem-casebook-eval`](skills/ubem-casebook-eval/SKILL.md) skill guides an
+agent through checking, preparing, and grading instances. It runs only when
+asked; recording a case with `ubem-casebook-add` never starts an evaluation.
 
 ## Local preview
 

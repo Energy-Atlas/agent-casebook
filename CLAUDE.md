@@ -10,3 +10,4 @@ rules:
 - Use `python scripts/casebook.py next-id` rather than guessing ids.
 - Run `python scripts/casebook.py check` and `mkdocs build --strict` before
   committing a case. Use the project virtual environment (`.venv`) if present.
+- When touching `evals/`, also run `python evals/evalkit.py check`.

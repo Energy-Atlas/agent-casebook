@@ -23,6 +23,9 @@ regardless of which simulation engine, UBEM framework, or agent tooling is used.
 | `templates/case.md` | Template for new cases |
 | `scripts/casebook.py` | Schema, validator, CLI, and MkDocs hook |
 | `skills/ubem-casebook-add/SKILL.md` | Installable agent skill that adds a case via branch and PR |
+| `skills/ubem-casebook-eval/SKILL.md` | Agent skill for checking, preparing, and grading evaluation instances |
+| `evals/` | Optional evaluation instances and their tooling (`evals/README.md`) |
+| `docs/guide/evaluations.md` | Concepts: case, evaluation instance, run result |
 | `mkdocs.yml` | Site configuration |
 
 Categories, in workflow order: `preprocessing`, `model-config`, `simulation`,
@@ -67,6 +70,9 @@ The validator enforces these; `docs/guide/case-format.md` explains them.
   `data_availability`, `eval_readiness`. No other fields.
 - `id` is `UBEM-` plus a zero-padded number, unique, never reused or renumbered.
 - `stage` equals the category folder the file is in.
+- `eval_readiness: automated` requires an evaluation instance in
+  `evals/instances/` that links to the case id. Otherwise choose
+  `conceptual`, `specified`, or `mockable`.
 - `date` is the date the case was recorded (`YYYY-MM-DD`).
 - `tags` are kebab-case. Reuse existing tags where they fit (see the Tags page
   or `grep -h "^tags:" -r docs/cases`).
@@ -91,6 +97,33 @@ The validator enforces these; `docs/guide/case-format.md` explains them.
   tool"), not by product, unless the product matters to the behavior.
 - Link related cases with relative links, e.g. `[UBEM-001](area-benchmarking.md)`.
 - Cite only references you can verify. Do not invent citations, URLs, or data.
+
+## Evaluation instances (optional)
+
+A case is complete without evaluation material. Adding a case never requires
+an instance, and recording a case never runs an evaluation.
+
+When asked to add or change an evaluation instance:
+
+- Put it in `evals/instances/<instance-id>/`, never under `docs/` (anything
+  there is published and treated as a case). Link it to existing case ids in
+  `instance.yaml`; the case file does not change except `eval_readiness`.
+- Keep `agent/` (what the evaluated agent receives) free of case text, case
+  or instance ids, and reference answers. Give faulty and control variants the
+  same task text and file names.
+- Describe instances as public development references, not hidden
+  benchmarks. List what the outputs cannot establish under `not_assessed`.
+- Include a correct sample submission and targeted incorrect ones with the
+  exact criteria each must fail.
+- Run `python evals/evalkit.py check` as well as the case checks.
+- Keep run results out of Git (`runs/` is ignored) and out of case and
+  instance folders.
+- Use only newly constructed synthetic data until the licensing decisions in
+  `evals/README.md` are made for third-party data and code.
+
+An agent being evaluated must start in a fresh session from a bundle made by
+`python evals/evalkit.py prepare`, without the authoring conversation or this
+repository. `prepare` assembles a clean bundle; it does not enforce isolation.
 
 ## Confidentiality
 
@@ -120,7 +153,7 @@ sources. Cite them under References instead.
 - Types: `feat` (new case or site feature), `fix` (correction), `docs`
   (guide, README, agent docs), `chore`, `ci`, `refactor`.
 - Scope is the case category for case changes, otherwise the area touched
-  (`site`, `template`, `schema`, `agents`).
+  (`site`, `template`, `schema`, `agents`, `skills`, `evals`).
 
 Examples:
 
