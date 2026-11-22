@@ -23,6 +23,8 @@ regardless of which simulation engine, UBEM framework, or agent tooling is used.
 | `templates/case.md` | Template for new cases |
 | `scripts/casebook.py` | Schema, validator, CLI, and MkDocs hook |
 | `skills/ubem-casebook-add/SKILL.md` | Installable agent skill that adds a case via branch and PR |
+| `docs/guide/evaluations.md` | Concepts: case, evaluation instance, run result; where each lives |
+| `docs/guide/data-release.md` | What may be published from non-public data, and how |
 | `mkdocs.yml` | Site configuration |
 
 Categories, in workflow order: `preprocessing`, `model-config`, `simulation`,
@@ -67,6 +69,11 @@ The validator enforces these; `docs/guide/case-format.md` explains them.
   `data_availability`, `eval_readiness`. No other fields.
 - `id` is `UBEM-` plus a zero-padded number, unique, never reused or renumbered.
 - `stage` equals the category folder the file is in.
+- `eval_readiness: automated` means an evaluation instance that links to the
+  case id exists in the separate validation package. `check` verifies this
+  only when given the package (`--evals-dir PATH` or `UBEM_EVALS_DIR`);
+  otherwise it prints a note and skips the cross-check. Without such an
+  instance, choose `conceptual`, `specified`, or `mockable`.
 - `date` is the date the case was recorded (`YYYY-MM-DD`).
 - `tags` are kebab-case. Reuse existing tags where they fit (see the Tags page
   or `grep -h "^tags:" -r docs/cases`).
@@ -92,6 +99,26 @@ The validator enforces these; `docs/guide/case-format.md` explains them.
 - Link related cases with relative links, e.g. `[UBEM-001](area-benchmarking.md)`.
 - Cite only references you can verify. Do not invent citations, URLs, or data.
 
+## Evaluation instances (optional)
+
+A case is complete without evaluation material. Adding a case never requires
+an instance, and recording a case never runs an evaluation.
+
+This repository holds cases and guides only. Evaluation instances,
+environments, graders, and run tooling live in a separate validation package
+(a local repository, not yet published), which follows its own instructions.
+Private held-out material is kept outside both. Never add instances, fixtures,
+references, graders, or run results here.
+
+A case refers to its instances by instance id in `Evaluation potential`, not
+by path. In the package, each instance is `instances/<instance-id>/instance.yaml`
+with a `cases:` list of the case ids it exercises. To cross-check
+`eval_readiness: automated` against it:
+
+```bash
+python scripts/casebook.py check --evals-dir <path-to-validation-package>
+```
+
 ## Confidentiality
 
 This repository is public. `data_availability: private` or `restricted` means
@@ -102,6 +129,14 @@ the data behind a case is not shared, so the case must not contain it.
 - No excerpts of private datasets, internal reports, or client deliverables.
 - Point to restricted material only with a non-identifying description,
   e.g. "internal calibration notes, 2026 campus project".
+- For anything derived from non-public data (statistics, reconstructed
+  fixtures, provenance records), follow `docs/guide/data-release.md`: prefer
+  qualitative cases and synthetic reconstructions, keep the key from labels
+  to real sources outside the repository, and never publish transformed real
+  records without the data owner's written approval.
+- `python scripts/casebook.py check` runs a release scan for secrets, email
+  addresses, personal paths, street addresses, parcel and building ids. It
+  catches accidents only; review the rest yourself.
 
 If a request would put such material in a case, stop and ask.
 
@@ -120,7 +155,7 @@ sources. Cite them under References instead.
 - Types: `feat` (new case or site feature), `fix` (correction), `docs`
   (guide, README, agent docs), `chore`, `ci`, `refactor`.
 - Scope is the case category for case changes, otherwise the area touched
-  (`site`, `template`, `schema`, `agents`).
+  (`site`, `template`, `schema`, `agents`, `skills`, `evals`).
 
 Examples:
 

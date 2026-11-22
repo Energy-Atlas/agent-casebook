@@ -34,4 +34,5 @@ anything that should not be public.
 - Conditions on each "avoid", and the domain reasoning behind it.
 - No private data, identifying details, or unverifiable citations.
 
-See the [case format](case-format.md) for the schema.
+See the [case format](case-format.md) for the schema. When a case draws on
+non-public data, follow [releasing data-derived material](data-release.md).

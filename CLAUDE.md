@@ -10,3 +10,6 @@ rules:
 - Use `python scripts/casebook.py next-id` rather than guessing ids.
 - Run `python scripts/casebook.py check` and `mkdocs build --strict` before
   committing a case. Use the project virtual environment (`.venv`) if present.
+- Evaluation instances live in the separate validation package, not here. To
+  cross-check `eval_readiness: automated`, pass its location to `check` with
+  `--evals-dir PATH` or `UBEM_EVALS_DIR`.

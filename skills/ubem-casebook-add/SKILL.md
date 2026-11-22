@@ -23,6 +23,11 @@ ubem-casebook-add [case name] [case category] [context] [fetch-context=false] [s
 Work through the steps in order. Do not skip the preflight checks, the
 validation, or the confidentiality check, whatever the options say.
 
+This skill records qualitative cases only. It does not create evaluation
+instances, prepare bundles, or run or grade evaluations, and recording a case
+never starts one. Evaluation instances, environments, and graders live in a
+separate validation package, not in the casebook.
+
 ## 1. Parse the arguments
 
 Read the text that follows the skill invocation.
@@ -145,14 +150,23 @@ Leave it alone: build the case in a separate worktree.
    - the required sections, plus optional ones when you can write them from
      the allowed sources (see step 1), without the `(optional)` suffix and
      without the template's prompt text. Without an Evaluation potential
-     section, `eval_readiness` is `conceptual`;
+     section, `eval_readiness` is `conceptual`. Use `automated` only if an
+     instance in the separate validation package already links to this case
+     id, and name that instance by id under Evaluation potential. A new case
+     normally has none;
    - links to related cases as relative links;
    - only references you can verify; no invented citations, URLs, or data.
 4. **Confidentiality check.** The repository is public. If the draft would
    contain real addresses, owner or person names, account or meter ids,
    building-identifying details from private data, excerpts of private or
    copyrighted material, or anything the user marked confidential, **stop and
-   ask**, even when `skip-approval=true`. Offer a generalized wording.
+   ask**, even when `skip-approval=true`. Offer a generalized wording. When
+   the case draws on non-public data, follow `docs/guide/data-release.md`:
+   name sources only by non-identifying description, quote only aggregate
+   figures, and leave out project, place, and client names. Findings of the
+   release scan in `scripts/casebook.py check` are problems to fix, not
+   warnings; exempt a line with `release-scan: allow` only when the match is
+   not sensitive, and tell the user.
 
 ## 5. Validate and commit
 

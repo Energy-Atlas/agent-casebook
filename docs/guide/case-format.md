@@ -55,7 +55,8 @@ each covers.
 | `synthetic` | The case relies only on constructed data |
 
 The repository is public. Whatever the value, a case never contains private
-data or identifying details.
+data or identifying details. See [releasing data-derived material](data-release.md)
+for what may be published from non-public data.
 
 ### `eval_readiness`
 
@@ -64,7 +65,13 @@ data or identifying details.
 | `conceptual` | The behavior is described; no assessment is designed yet |
 | `specified` | Pass/fail criteria or a rubric are written down |
 | `mockable` | A synthetic or mocked scenario that reproduces the situation is described |
-| `automated` | An executable evaluation exists |
+| `automated` | An executable evaluation exists: at least one instance in the separate validation package links to the case |
+
+Evaluation instances are optional and live outside the casebook; see
+[evaluation instances](evaluations.md). A case marked `automated` names its
+instances by id under *Evaluation potential*. `python scripts/casebook.py check
+--evals-dir <path>` verifies the link against a local copy of the validation
+package; without a location the check skips this and prints a note.
 
 ## Body
 

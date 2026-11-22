@@ -71,6 +71,26 @@ npx skills add ./ --skill ubem-casebook-add -g
 The skill works on a local checkout of this repository. Run your agent from
 inside the checkout, or set `UBEM_CASEBOOK_DIR` to its path.
 
+## Evaluation instances (optional)
+
+This repository holds cases and guides only. Runnable evaluation instances
+(concrete inputs, an agent-facing task, a reference, and a grader), their
+environments, and run tooling live in a separate validation package, which is
+not yet published. Private held-out material is kept outside both. A case does
+not need an instance; one that has one names it by instance id and is marked
+`eval_readiness: automated`. See
+[docs/guide/evaluations.md](docs/guide/evaluations.md).
+
+To cross-check `eval_readiness: automated` against a local copy of the
+package:
+
+```bash
+python scripts/casebook.py check --evals-dir <path-to-validation-package>
+```
+
+Without `--evals-dir` (or the `UBEM_EVALS_DIR` environment variable), `check`
+skips that cross-check and prints a note.
+
 ## Local preview
 
 ```bash
