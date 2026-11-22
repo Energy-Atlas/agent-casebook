@@ -75,8 +75,8 @@ inside the checkout, or set `UBEM_CASEBOOK_DIR` to its path.
 
 This repository holds cases and guides only. Runnable evaluation instances
 (concrete inputs, an agent-facing task, a reference, and a grader), their
-environments, and run tooling live in a separate validation package, which is
-not yet published. Private held-out material is kept outside both. A case does
+environments, and run tooling live in a separate validation package,
+`Energy-Atlas/ubem-agent-evals`, which is a private repository for now. Private held-out material is kept outside both. A case does
 not need an instance; one that has one names it by instance id and is marked
 `eval_readiness: automated`. See
 [docs/guide/evaluations.md](docs/guide/evaluations.md).

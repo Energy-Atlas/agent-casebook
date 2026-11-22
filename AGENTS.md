@@ -106,7 +106,8 @@ an instance, and recording a case never runs an evaluation.
 
 This repository holds cases and guides only. Evaluation instances,
 environments, graders, and run tooling live in a separate validation package
-(a local repository, not yet published), which follows its own instructions.
+(`Energy-Atlas/ubem-agent-evals`, a private repository for now), which
+follows its own instructions.
 Private held-out material is kept outside both. Never add instances, fixtures,
 references, graders, or run results here.
 

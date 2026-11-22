@@ -13,7 +13,9 @@ cases will never have one.
 | **Evaluation instance** | Concrete inputs, the task the agent receives, what it may use and must return, the reference, the acceptance rules, and a grader | A separate validation package, together with the environments and graders |
 | **Run result** | What one agent configuration actually produced on one instance, and how it was graded | Outside the casebook; never committed with cases |
 
-The validation package is a separate repository and is not yet published.
+The validation package is a separate repository,
+`Energy-Atlas/ubem-agent-evals`. It is private for now, so its instances
+cannot yet be inspected from this site.
 Private held-out material, such as instances built on non-public data or kept
 back from public development, is kept outside both the casebook and the
 package.
